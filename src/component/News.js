@@ -5,7 +5,7 @@ import Spinner from "./Spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const News = (props) => {
-  const [article, setArticle] = useState([]);
+  const [articles, setArticle] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setpage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
@@ -27,6 +27,7 @@ const News = (props) => {
     setArticle(parsedData.articles);
     setTotalResults(parsedData.totalResults);
     props.setProgress(100);
+    console.log(typeof(articles))
   };
 
   useEffect(() => {
@@ -40,14 +41,29 @@ const News = (props) => {
     const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.APIKey}&page=${page}&pageSize=${props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
-    setArticle(article.concat(parsedData.articles));
-    setTotalResults(parsedData.totalResults);
+    // setArticle(articles.concat(parsedData.articles));
+    // // setArticle(parsedData.articles);
+    
+    
+    // setTotalResults(parsedData.totalResults);
+
+  
+     setArticle(articles.concat(parsedData.articles));
+      // setTotalResults(parsedData.totalResults);
+   
+  
   };
   const fetchMoreData = async () => {
-    setpage(page + 1);
+    // setpage(page + 1);
+    console.log(page)
+  
     if (Math.ceil(totalResults / props.pageSize) >= page) {
+      setpage(page + 1);
       Fetch();
+      // console.log(articles.length)
+
     }
+    //  console.log(articles.length)
   };
 
   return (
@@ -57,15 +73,23 @@ const News = (props) => {
       </h1>
       {loading && <Spinner />}
       <InfiniteScroll
+        
         key={page}
-        dataLength={article.length}
+        dataLength={totalResults / props.pageSize}
         next={fetchMoreData}
         hasMore={Math.ceil(totalResults / props.pageSize) >= page}
         loader={<Spinner />}
+        // scrollableTarget="scrollableDiv"
+        // endMessage={
+        //   <p style={{ textAlign: 'center' }}>
+        //     <b>Yay! You have seen it all</b>
+        //   </p>
+        // }
       >
-        <div className="container mr-5 ml-5">
+        <div id="scrollableDiv" className="container mr-5 ml-5">
           <div className="row my-3">
-            {article.map((element, index) => {
+         
+            {articles.map((element, index) => {
               return (
                 <div className="col-md-4 my-3" key={index}>
                   <NewsItem
@@ -80,7 +104,9 @@ const News = (props) => {
                 </div>
               );
             })}
+            
           </div>
+      
         </div>
       </InfiniteScroll>
     </>
